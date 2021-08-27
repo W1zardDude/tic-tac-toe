@@ -4,7 +4,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Board from './components/board/board';
 
-
+const ai = require('tictactoe-complex-ai');
 
 class Game extends Component {
   constructor(props) {
@@ -12,13 +12,20 @@ class Game extends Component {
     this.state = {
       history: [
         {
-          squares: Array(9).fill(null)
+          squares: Array(9).fill('')
         }
       ],
       stepNumber: 0,
       xIsNext: true
-    };
+    }
+    this.aiInstance = ai.createAI(
+      {
+        level: 'easy'
+      }
+      );
   }
+
+
 
   handleClick(i) {
     console.log("tyt", i)
@@ -38,6 +45,21 @@ class Game extends Component {
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext
     });
+
+    console.log('componentDidUpdate', squares);
+    const board = history;
+
+    this.aiInstance.play(board).then(pos => {
+
+      console.log('AI plays on the position '+pos);
+
+      this.handleClick(pos);
+      
+    }).catch(() => {
+    
+      // Fail
+      console.log('An error occurred.');
+    });
   }
 
 
@@ -46,6 +68,14 @@ class Game extends Component {
       stepNumber: step,
       xIsNext: (step % 2) === 0
     });
+  }
+
+  componentDidMount() {
+    console.log('componentDidMount');
+  }
+
+  componentDidUpdate() {
+    
   }
 
   render() {
