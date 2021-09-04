@@ -111,14 +111,13 @@ class Game extends Component {
 
 
   jumpTo(step) {
+    console.log("Jump")
+    console.log("historyJump", this.state.history.slice(0, step))
     this.setState({
       stepNumber: step,
-      xIsNext: (step % 2) === 0
+      xIsNext: (step % 2) === 0,
+      // history: this.state.history.slice(0, step)
     });
-  }
-
-  componentDidMount() {
-    console.log('componentDidMount');
   }
 
   render() {
