@@ -16,19 +16,79 @@ class Game extends Component {
         }
       ],
       stepNumber: 0,
-      xIsNext: true
+      xIsNext: true,
+      aiInstance: ai.createAI(
+        {
+          level: 'easy'
+        }),
+      winner: false
     }
-    this.aiInstance = ai.createAI(
-      {
-        level: 'easy'
-      }
-      );
   }
 
+  // static getDerivedStateFromProps(props, state) {
+  //   console.log("getDerivedStateFromProps", state)
 
+  //   const { history, aiInstance, stepNumber } = state;
+  //   if(stepNumber > 0){
+
+  //     const current = history[history.length - 1].squares;
+  //     console.log(current, "current");
+
+    
+  //     return aiInstance.play(current).then(pos => {
+
+  //       console.log('AI plays on the position '+pos);
+  //       current[pos] = 'O';
+  //       return {
+  //         history: history.concat([
+  //           {
+  //             squares: current
+  //           }
+  //         ]),
+  //         stepNumber: history.length,
+  //         xIsNext: !state.xIsNext
+  //       };
+        
+  //     }).catch((err) => {
+      
+  //       // Fail
+  //       console.log('An error occurred.', err);
+  //     });
+  //   } else return null;
+  // }
+  componentDidUpdate() {
+    console.log("componentDidUpdate", this.state)
+    
+    const { history, aiInstance, xIsNext, winner } = this.state;
+    if(!xIsNext && !winner){
+      const current = history[history.length - 1].squares;
+      console.log(current, "current");
+
+    
+      aiInstance.play(current).then(pos => {
+
+        console.log('AI plays on the position '+pos);
+        current[pos] = 'O';
+        this.setState({
+          history: history.concat([
+            {
+              squares: current
+            }
+          ]),
+          stepNumber: history.length,
+          xIsNext: !this.xIsNext
+        });
+        
+      }).catch((err) => {
+      
+        // Fail
+        console.log('An error occurred.', err);
+      });
+    }
+  } 
 
   handleClick(i) {
-    console.log("tyt", i)
+    // console.log("tyt", i)
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
@@ -46,20 +106,7 @@ class Game extends Component {
       xIsNext: !this.state.xIsNext
     });
 
-    console.log('componentDidUpdate', squares);
-    const board = history;
-
-    this.aiInstance.play(board).then(pos => {
-
-      console.log('AI plays on the position '+pos);
-
-      this.handleClick(pos);
-      
-    }).catch(() => {
-    
-      // Fail
-      console.log('An error occurred.');
-    });
+    // console.log('componentDidUpdate', squares);
   }
 
 
@@ -74,11 +121,8 @@ class Game extends Component {
     console.log('componentDidMount');
   }
 
-  componentDidUpdate() {
-    
-  }
-
   render() {
+    console.log('render')
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
@@ -97,6 +141,7 @@ class Game extends Component {
     let status;
     if (winner) {
       status = "Winner: " + winner;
+      this.state.winner = true;
     } else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
     }
