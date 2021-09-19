@@ -20,7 +20,6 @@ export default class Board extends Component {
     }
   
     boardNow() {
-        const content = <div></div>;
         let count = 0;
         let arr = [];
         for(let i = 0; i < 3; i++) {
